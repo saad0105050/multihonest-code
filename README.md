@@ -16,12 +16,11 @@ Look at the comments around the `main()` function in each file. They are fairly 
 
 The file `prob_forkable.cpp`, when built into an executable, is an interactive program which asks for
 * `N`, a positive integer, the length of the characteristic string `w = w_1 ... w_N` where the symbol `w_i` is one of `h, H, A`; 
-* `R`, a positive integer, the maximum reach allowed in computation; 
 * `eps`, a real between 0 and 1, so that `Pr[w_i = A] = (1 - eps)/2` independently for each `i = 1, ... , N`; and
-* `r`, a real between 0 and 1, so that `Pr[w_i = h] = r * (1 + eps)/2`.
+* `r`, a real between 0 and 1, so that `r = Pr[w_i = h]/Pr[w_i != A]`.
 It outputs an upper bound on the probability that `w` is forkable, i.e., slot 1 is not `N`-settled.
 
-The file `forkability_table.cpp`, when built into an executable, is an interactive program which requests an output file name and then reproduces the table in Section 6.6 of [the paper](https://eprint.iacr.org/2020/041.pdf). Look inside the `main()` function to see which values of `N`, `eps`, and `R` are being used.
+The file `forkability_table.cpp`, when built into an executable, is an interactive program which requests an output file name and then reproduces the table in Section 6.6 of [the paper](https://eprint.iacr.org/2020/041.pdf). Look inside the `main()` function to see which values of `N`, `eps`, and `r` are being used.
 
 
 If building on Windows in debug mode, the header `win_mem_leak.h` helps detect memory leak, if any.
