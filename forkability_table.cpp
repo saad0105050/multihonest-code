@@ -6,6 +6,7 @@
 #include <string>
 #include <cmath>
 #include <algorithm>
+#include <chrono>
 
 struct Params {
 	// you can assign the members here
@@ -39,7 +40,7 @@ void write(ReachAndMargin* const rm, const int t, std::ofstream& file,
 
 	// gather values
 	if (useLogarithms) {
-		for (auto i = 0; i < prForkable.size(); i++)
+		for (auto i = 0u; i < prForkable.size(); i++)
 			logPrForkable.push_back(std::log10(prForkable[i]));
 	}
 	DoubleVector& probs = useLogarithms ? logPrForkable : prForkable;
@@ -47,7 +48,8 @@ void write(ReachAndMargin* const rm, const int t, std::ofstream& file,
 	if (useScientific){
 		for (auto p : probs) {
 			char dest[100];
-			sprintf_s(dest, "%1.2E, ", p);
+			// sprintf_s(dest, "%1.2E, ", p);
+			snprintf(dest, 100, "%1.2E, ", p);
 			ss << dest;
 		}
 	}
@@ -157,7 +159,7 @@ void run_experiment(Params& params, std::ofstream& file){
 			sum += last;
 		}
 		// write current state to file
-		if (t == params.Ns[toBeWritten]) {
+		if (t == (int) params.Ns[toBeWritten]) {
 			write(rm, t, file, 
 				params.useLogarithms, 
 				params.printScientificFormat);
@@ -176,6 +178,14 @@ void make_forkability_table(
 	const bool useLogarithm = true,
 	const bool printScientificFormat = false
 	){
+
+	// Test whether memory leak detection is working
+	//auto test_mem_leak = new std::string("Testing mem leak detection"); // this will cause memory leaks unless deleted
+
+#ifdef _WIN32   
+	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
+#endif
+
 	std::ofstream file;
 	file.open(fileName);
 
@@ -205,10 +215,16 @@ void make_forkability_table(
 	file.clear();
 	ss.clear();
 	fileName.clear();
+
+
+#ifdef _WIN32   
+	_CrtDumpMemoryLeaks();
+#endif
+
 }
 
 // See the definition of struct Params for options you can set/unset
-void main() {
+int main() {
 	const char* default_fileName = "forkability_probs.multihonest.txt";
 	std::string fileName;
 
@@ -220,7 +236,7 @@ void main() {
 
 	// Adversarial fractions
 	std::vector<double> advFracArr = { 
-		//0.01, 0.49 
+		// 0.01, 0.49 
 		0.01, 0.1, 0.2, 0.3, 0.4, 0.49
 	};
 
@@ -228,17 +244,15 @@ void main() {
 	// Timeslots at which to write Pr[forkable] in file,
 	// starting from MIN to MAX with INCREMENT
 	// Note that the Markov chain will be evolved up to MAX timeslots
-	//int NminMaxInc[] = { 10, 50, 10 };
-	//int NminMaxInc[] = { 10, 10, 10 }; // a single output line
 	std::vector<int> NminMaxInc = { 
+		// 10, 10, 10
 		100, 500, 100
-		//10, 10, 10
 	};
 
 	// Vector of ph/(1 - pA) values
 	std::vector<double> fracUniqueHonestArr = { 
+		// 0.01, 0.25
 		0.01, 0.25, 0.5, 0.8, 0.9, 1.0 
-		//0.01, 0.25
 	};
 
 
@@ -246,28 +260,21 @@ void main() {
 	int R = ReachAndMargin::RMAX;  
 	//int R = 10;
 
-	// Test whether memory leak detection is working
-	//auto test_mem_leak = new std::string("Testing mem leak detection"); // this will cause memory leaks unless deleted
-
-#ifdef _WIN32   
-	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
-#endif
-
 	bool	useLogarithm = false,
 			printScientificFormat = true
 			;
+
+
+
+	// do the work
 	make_forkability_table(
-		advFracArr, 
-		NminMaxInc, 
-		fracUniqueHonestArr,
+		advFracArr, NminMaxInc, fracUniqueHonestArr,
 		R, fileName, 
-		useLogarithm,
-		printScientificFormat);
+		useLogarithm, printScientificFormat
+	);
+
+
 	fileName.clear();
-
-#ifdef _WIN32   
-	_CrtDumpMemoryLeaks();
-#endif
-
-	system("pause");
+	// system("pause");
+	return 0;
 }

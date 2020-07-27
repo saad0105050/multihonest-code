@@ -9,8 +9,5 @@
 #define DBG_NEW new
 #endif
 
-#define DELETE(x) if(x) delete x; x = 0;
-#define DELETE_ARR(x) if(x) delete[] x; x = 0;
-
 #include <stdlib.h>  
 #include <crtdbg.h>  

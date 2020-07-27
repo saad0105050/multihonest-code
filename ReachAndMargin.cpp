@@ -1,6 +1,8 @@
 #include "ReachAndMargin.h"
 #include <cassert>
 #include <iomanip>
+#include <cstring> // for memset
+#include <cmath>
 
 
 
@@ -292,8 +294,7 @@ std::ostream& operator<<(std::ostream& out, const DoubleVector& vec) {
 
 
 std::ostream& operator<<(std::ostream& out, const ReachAndMargin& self) {
-	auto M = self.curMat;
-	out << "=== Matrix at t: " << time << " ===\n";
+	out << "=== Matrix at t: " << self.time << " ===\n";
 
 	int below = - self.time;
 	int above = self.R + self.time;

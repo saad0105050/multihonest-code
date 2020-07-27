@@ -4,8 +4,10 @@
 #ifdef _WIN32
 #include "win_mem_leak.h"
 #endif
+#define DELETE(x) if(x) delete x; x = 0;
+#define DELETE_ARR(x) if(x) delete[] x; x = 0;
 
-#include <chrono>
+
 #include<vector>
 #include<iostream>
 
